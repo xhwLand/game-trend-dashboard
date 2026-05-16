@@ -1,6 +1,6 @@
-// 娓告垙姒滃崟鍒嗘瀽鐪嬫澘 - JavaScript
+// 游戏榜单分析看板 - JavaScript
 
-// 鍏ㄥ眬鍙橀噺
+// 全局变量
 let allData = {
     douyin: null,
     wechat: null,
@@ -12,24 +12,27 @@ let trendChart = null;
 let typeChart = null;
 let platformChart = null;
 
-// 骞冲彴鍚嶇О鏄犲皠
+// 平台名称映射
 const platformNames = {
-    'douyin': '鎶栭煶灏忔父鎴?,
-    'wechat': '寰俊灏忔父鎴?,
-    'ios_us': 'iOS缇庡尯',
-    'google_us': 'Google缇庡尯'
+    'douyin': '抖音小游戏',
+    'wechat': '微信小游戏',
+    'ios_us': 'iOS美区',
+    'google_us': 'Google美区'
 };
 
-// 鍒濆鍖?document.addEventListener('DOMContentLoaded', function() {
+// 初始化
+document.addEventListener('DOMContentLoaded', function() {
     loadAllData();
 });
 
-// 鍔犺浇鎵€鏈夋暟鎹?async function loadAllData() {
+// 加载所有数据
+async function loadAllData() {
     const updateElement = document.getElementById('lastUpdate');
-    updateElement.textContent = '姝ｅ湪鍔犺浇鏁版嵁...';
+    updateElement.textContent = '正在加载数据...';
     
     try {
-        // 骞惰鍔犺浇鎵€鏈夊钩鍙版暟鎹?        const promises = [
+        // 并行加载所有平台数据
+        const promises = [
             fetchData('douyin'),
             fetchData('wechat'),
             fetchData('ios_us'),
@@ -38,35 +41,37 @@ const platformNames = {
         
         await Promise.all(promises);
         
-        // 鏇存柊鏄剧ず
+        // 更新显示
         updateLastUpdate();
         updateStats();
         renderCharts();
         renderTable();
         
-        console.log('鏁版嵁鍔犺浇瀹屾垚!');
+        console.log('数据加载完成!');
     } catch (error) {
-        console.error('鏁版嵁鍔犺浇澶辫触:', error);
-        updateElement.textContent = '鏁版嵁鍔犺浇澶辫触锛岃鍒锋柊閲嶈瘯';
+        console.error('数据加载失败:', error);
+        updateElement.textContent = '数据加载失败，请刷新重试';
     }
 }
 
-// 鑾峰彇鍗曚釜骞冲彴鏁版嵁
+// 获取单个平台数据
 async function fetchData(platform) {
     try {
         const response = await fetch(`data/${platform}/latest.json`);
         if (response.ok) {
             allData[platform] = await response.json();
         } else {
-            // 濡傛灉娌℃湁鏁版嵁锛屼娇鐢ㄧず渚嬫暟鎹?            allData[platform] = getSampleData(platform);
+            // 如果没有数据，使用示例数据
+            allData[platform] = getSampleData(platform);
         }
     } catch (error) {
-        console.log(`${platform} 鏁版嵁鍔犺浇澶辫触锛屼娇鐢ㄧず渚嬫暟鎹甡);
+        console.log(`${platform} 数据加载失败，使用示例数据`);
         allData[platform] = getSampleData(platform);
     }
 }
 
-// 绀轰緥鏁版嵁锛堝綋API涓嶅彲鐢ㄦ椂锛?function getSampleData(platform) {
+// 示例数据（当API不可用时）
+function getSampleData(platform) {
     const today = new Date().toISOString().split('T')[0];
     const games = generateSampleGames(platform);
     
@@ -79,32 +84,32 @@ async function fetchData(platform) {
     };
 }
 
-// 鐢熸垚绀轰緥娓告垙鏁版嵁
+// 生成示例游戏数据
 function generateSampleGames(platform) {
     const gameTemplates = {
         'douyin': [
-            { name: '璐悆铔囧ぇ浣滄垬', type: '浼戦棽', baseScore: 9800 },
-            { name: '娑堢伃鏄熸槦', type: '鐩婃櫤', baseScore: 9700 },
-            { name: '璺充竴璺?, type: '浼戦棽', baseScore: 9600 },
-            { name: '妞嶇墿澶ф垬鍍靛案2', type: '绛栫暐', baseScore: 9500 },
-            { name: '淇濆崼钀濆崪', type: '濉旈槻', baseScore: 9400 },
-            { name: '寮€蹇冩秷娑堜箰', type: '娑堥櫎', baseScore: 9300 },
-            { name: '鐞冪悆澶т綔鎴?, type: '浼戦棽', baseScore: 9200 },
-            { name: '绌胯秺鐏嚎', type: '灏勫嚮', baseScore: 9100 },
-            { name: '鐜嬭€呰崳鑰€', type: 'MOBA', baseScore: 9000 },
-            { name: '鍜屽钩绮捐嫳', type: '灏勫嚮', baseScore: 8900 },
+            { name: '贪吃蛇大作战', type: '休闲', baseScore: 9800 },
+            { name: '消灭星星', type: '益智', baseScore: 9700 },
+            { name: '跳一跳', type: '休闲', baseScore: 9600 },
+            { name: '植物大战僵尸2', type: '策略', baseScore: 9500 },
+            { name: '保卫萝卜', type: '塔防', baseScore: 9400 },
+            { name: '开心消消乐', type: '消除', baseScore: 9300 },
+            { name: '球球大作战', type: '休闲', baseScore: 9200 },
+            { name: '穿越火线', type: '射击', baseScore: 9100 },
+            { name: '王者荣耀', type: 'MOBA', baseScore: 9000 },
+            { name: '和平精英', type: '射击', baseScore: 8900 },
         ],
         'wechat': [
-            { name: '璺充竴璺?, type: '浼戦棽', baseScore: 9900 },
-            { name: '娆箰鏂楀湴涓?, type: '妫嬬墝', baseScore: 9800 },
-            { name: '娆箰楹诲皢', type: '妫嬬墝', baseScore: 9700 },
-            { name: '澶╁ぉ璞℃', type: '妫嬬墝', baseScore: 9600 },
-            { name: '鑵捐娆箰鎹曢奔', type: '浼戦棽', baseScore: 9500 },
-            { name: '鎷崇殗鍛借繍', type: '鍔ㄤ綔', baseScore: 9400 },
-            { name: '鐏煷浜烘垬浜?, type: '绛栫暐', baseScore: 9300 },
-            { name: '妞嶇墿澶ф垬鍍靛案', type: '濉旈槻', baseScore: 9200 },
-            { name: '淇濆崼钀濆崪', type: '濉旈槻', baseScore: 9100 },
-            { name: '寮€蹇冩秷娑堜箰', type: '娑堥櫎', baseScore: 9000 },
+            { name: '跳一跳', type: '休闲', baseScore: 9900 },
+            { name: '欢乐斗地主', type: '棋牌', baseScore: 9800 },
+            { name: '欢乐麻将', type: '棋牌', baseScore: 9700 },
+            { name: '天天象棋', type: '棋牌', baseScore: 9600 },
+            { name: '腾讯欢乐捕鱼', type: '休闲', baseScore: 9500 },
+            { name: '拳皇命运', type: '动作', baseScore: 9400 },
+            { name: '火柴人战争', type: '策略', baseScore: 9300 },
+            { name: '植物大战僵尸', type: '塔防', baseScore: 9200 },
+            { name: '保卫萝卜', type: '塔防', baseScore: 9100 },
+            { name: '开心消消乐', type: '消除', baseScore: 9000 },
         ],
         'ios_us': [
             { name: 'Subway Surfers', type: 'Runner', baseScore: 4.7 },
@@ -145,7 +150,8 @@ function generateSampleGames(platform) {
     }));
 }
 
-// 鏇存柊鏈€鍚庢洿鏂版椂闂?function updateLastUpdate() {
+// 更新最后更新时间
+function updateLastUpdate() {
     const now = new Date();
     const updateStr = now.toLocaleString('zh-CN', {
         year: 'numeric',
@@ -154,10 +160,10 @@ function generateSampleGames(platform) {
         hour: '2-digit',
         minute: '2-digit'
     });
-    document.getElementById('lastUpdate').textContent = `鏈€鍚庢洿鏂? ${updateStr}`;
+    document.getElementById('lastUpdate').textContent = `最后更新: ${updateStr}`;
 }
 
-// 鏇存柊缁熻鍗＄墖
+// 更新统计卡片
 function updateStats() {
     let totalGames = 0;
     let topGame = '';
@@ -179,7 +185,8 @@ function updateStats() {
                 if (game.trend === 'up') {
                     trendingUp++;
                 }
-                if (game.score > 5) { // 璇勫垎鍒?                    totalRating += game.score;
+                if (game.score > 5) { // 评分制
+                    totalRating += game.score;
                     ratingCount++;
                 }
             });
@@ -192,11 +199,11 @@ function updateStats() {
     document.getElementById('avgRating').textContent = ratingCount > 0 ? (totalRating / ratingCount).toFixed(1) : '-';
 }
 
-// 鍒囨崲骞冲彴
+// 切换平台
 function switchPlatform(platform) {
     currentPlatform = platform;
     
-    // 鏇存柊鏍囩鏍峰紡
+    // 更新标签样式
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.dataset.platform === platform) {
@@ -204,16 +211,17 @@ function switchPlatform(platform) {
         }
     });
     
-    // 鏇存柊绛涢€夊櫒
+    // 更新筛选器
     document.getElementById('platformFilter').value = platform;
     
-    // 閲嶆柊娓叉煋琛ㄦ牸
+    // 重新渲染表格
     renderTable();
 }
 
-// 娓叉煋鍥捐〃
+// 渲染图表
 function renderCharts() {
-    // 鐑害瓒嬪娍鍥?    const trendCtx = document.getElementById('trendChart').getContext('2d');
+    // 热度趋势图
+    const trendCtx = document.getElementById('trendChart').getContext('2d');
     if (trendChart) trendChart.destroy();
     
     const labels = ['1-10', '11-20', '21-30', '31-40', '41-50'];
@@ -253,7 +261,8 @@ function renderCharts() {
         }
     });
     
-    // 娓告垙绫诲瀷鍒嗗竷鍥?    const typeCtx = document.getElementById('typeChart').getContext('2d');
+    // 游戏类型分布图
+    const typeCtx = document.getElementById('typeChart').getContext('2d');
     if (typeChart) typeChart.destroy();
     
     const typeData = calculateTypeDistribution();
@@ -279,14 +288,15 @@ function renderCharts() {
         }
     });
     
-    // 骞冲彴鍒嗗竷鍥?    const platformCtx = document.getElementById('platformChart').getContext('2d');
+    // 平台分布图
+    const platformCtx = document.getElementById('platformChart').getContext('2d');
     if (platformChart) platformChart.destroy();
     
     const platformData = {
-        '鎶栭煶灏忔父鎴?: allData.douyin?.count || 0,
-        '寰俊灏忔父鎴?: allData.wechat?.count || 0,
-        'iOS缇庡尯': allData.ios_us?.count || 0,
-        'Google缇庡尯': allData.google_us?.count || 0
+        '抖音小游戏': allData.douyin?.count || 0,
+        '微信小游戏': allData.wechat?.count || 0,
+        'iOS美区': allData.ios_us?.count || 0,
+        'Google美区': allData.google_us?.count || 0
     };
     
     platformChart = new Chart(platformCtx, {
@@ -294,7 +304,7 @@ function renderCharts() {
         data: {
             labels: Object.keys(platformData),
             datasets: [{
-                label: '娓告垙鏁伴噺',
+                label: '游戏数量',
                 data: Object.values(platformData),
                 backgroundColor: ['#ef4444', '#f59e0b', '#10b981', '#6366f1']
             }]
@@ -312,7 +322,7 @@ function renderCharts() {
     });
 }
 
-// 璁＄畻姣忎釜鎺掑悕娈电殑骞冲潎鍒嗘暟
+// 计算每个排名段的平均分数
 function calculateAvgByRank(games) {
     const groups = [
         games.slice(0, 10),
@@ -329,7 +339,7 @@ function calculateAvgByRank(games) {
     });
 }
 
-// 璁＄畻绫诲瀷鍒嗗竷
+// 计算类型分布
 function calculateTypeDistribution() {
     const types = {};
     
@@ -345,12 +355,12 @@ function calculateTypeDistribution() {
     return types;
 }
 
-// 娓叉煋琛ㄦ牸
+// 渲染表格
 function renderTable() {
     const tbody = document.getElementById('gamesTableBody');
     let games = [];
     
-    // 鏀堕泦娓告垙鏁版嵁
+    // 收集游戏数据
     for (const platform in allData) {
         const data = allData[platform];
         if (data && data.games) {
@@ -364,19 +374,20 @@ function renderTable() {
         }
     }
     
-    // 绛涢€?    if (currentPlatform !== 'all') {
+    // 筛选
+    if (currentPlatform !== 'all') {
         games = games.filter(g => g.platformKey === currentPlatform);
     }
     
-    // 鎺掑簭
+    // 排序
     games.sort((a, b) => a.rank - b.rank);
     
-    // 闄愬埗鏄剧ず鏁伴噺
+    // 限制显示数量
     games = games.slice(0, 50);
     
-    // 娓叉煋
+    // 渲染
     if (games.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="loading">鏆傛棤鏁版嵁</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="loading">暂无数据</td></tr>';
         return;
     }
     
@@ -399,29 +410,30 @@ function renderTable() {
     }).join('');
 }
 
-// 鑾峰彇瓒嬪娍鍥炬爣
+// 获取趋势图标
 function getTrendIcon(trend) {
     switch (trend) {
-        case 'up': return '馃搱';
-        case 'down': return '馃搲';
-        default: return '鉃★笍';
+        case 'up': return '📈';
+        case 'down': return '📉';
+        default: return '➡️';
     }
 }
 
-// 鑾峰彇娼滃姏鏍囩
+// 获取潜力标签
 function getPotentialBadge(potential) {
     switch (potential) {
-        case 'high': return '<span class="potential-badge high">楂樻綔鍔?/span>';
-        case 'medium': return '<span class="potential-badge medium">涓綔鍔?/span>';
-        default: return '<span class="potential-badge low">鏅€?/span>';
+        case 'high': return '<span class="potential-badge high">高潜力</span>';
+        case 'medium': return '<span class="potential-badge medium">中潜力</span>';
+        default: return '<span class="potential-badge low">普通</span>';
     }
 }
 
-// 绛涢€夎〃鏍?function filterTable() {
+// 筛选表格
+function filterTable() {
     const filterValue = document.getElementById('platformFilter').value;
     currentPlatform = filterValue;
     
-    // 鏇存柊鏍囩
+    // 更新标签
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.dataset.platform === filterValue) {
@@ -432,7 +444,7 @@ function getPotentialBadge(potential) {
     renderTable();
 }
 
-// 鎺掑簭琛ㄦ牸
+// 排序表格
 function sortTable() {
     const sortBy = document.getElementById('sortBy').value;
     let games = [];
@@ -466,12 +478,12 @@ function sortTable() {
             break;
     }
     
-    // 鏇存柊rank
+    // 更新rank
     games.forEach((game, index) => {
         game.rank = index + 1;
     });
     
-    // 閲嶆柊娓叉煋
+    // 重新渲染
     const tbody = document.getElementById('gamesTableBody');
     tbody.innerHTML = games.slice(0, 50).map(game => {
         const trendIcon = getTrendIcon(game.trend);
