@@ -59,7 +59,7 @@ def get_ios_us_games():
         {'rank': 36, 'name': 'Tiny Wings', 'developer': 'Andreas Iljedsson', 'category': 'Arcade', 'rating': 4.6},
         {'rank': 37, 'name': 'Bad Piggies', 'developer': 'Rovio', 'category': 'Puzzle', 'rating': 4.5},
         {'rank': 38, 'name': 'Where is My Water', 'developer': 'Disney', 'category': 'Puzzle', 'rating': 4.4},
-        {'rank': 39, 'name': 'Where's My Perry', 'developer': 'Disney', 'category': 'Puzzle', 'rating': 4.4},
+        {'rank': 39, 'name': "Where's My Perry", 'developer': 'Disney', 'category': 'Puzzle', 'rating': 4.4},
         {'rank': 40, 'name': 'Mighty Mighty', 'developer': 'Mediatonic', 'category': 'Arcade', 'rating': 4.3},
         {'rank': 41, 'name': 'Duel Links', 'developer': 'Konami', 'category': 'Card', 'rating': 4.5},
         {'rank': 42, 'name': 'Marvel Contest', 'developer': 'Kabam', 'category': 'RPG', 'rating': 4.4},
