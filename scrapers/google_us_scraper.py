@@ -1,5 +1,6 @@
 """
-Google Play缇庡尯鍏嶈垂娓告垙鎺掕姒滅埇铏?鏁版嵁鏉ユ簮锛欸oogle Play Store鍏紑姒滃崟
+Google Play美区免费游戏排行榜爬虫
+数据来源：Google Play Store公开榜单
 """
 import requests
 from bs4 import BeautifulSoup
@@ -10,13 +11,14 @@ from datetime import datetime
 
 def get_google_us_games():
     """
-    鑾峰彇Google Play缇庡尯鍏嶈垂娓告垙鎺掕姒滄暟鎹?    杩斿洖鏍煎紡锛歔{'rank': 1, 'name': '娓告垙鍚?, 'developer': '寮€鍙戝晢', 'category': '绫诲埆', 'rating': 4.5}]
+    获取Google Play美区免费游戏排行榜数据
+    返回格式：[{'rank': 1, 'name': '游戏名', 'developer': '开发商', 'category': '类别', 'rating': 4.5}]
     """
     games = []
     
-    # 妯℃嫙鏁版嵁锛堝疄闄呬娇鐢ㄦ椂鏇挎崲涓虹湡瀹炵埇铏唬鐮侊級
-    # Google Play缇庡尯姒滃崟鏁版嵁婧愶細https://play.google.com/store/apps/category/GAME
-    # 闇€瑕佷娇鐢℅oogle Play鐖櫕鎴栫涓夋柟API
+    # 模拟数据（实际使用时替换为真实爬虫代码）
+    # Google Play美区榜单数据源：https://play.google.com/store/apps/category/GAME
+    # 需要使用Google Play爬虫或第三方API
     
     sample_games = [
         {'rank': 1, 'name': 'Subway Surfers', 'developer': 'SYBO Games', 'category': 'Runner', 'rating': 4.7},
@@ -75,12 +77,12 @@ def get_google_us_games():
 
 
 def save_google_us_data():
-    """淇濆瓨Google Play缇庡尯鏁版嵁鍒癑SON鏂囦欢"""
+    """保存Google Play美区数据到JSON文件"""
     games = get_google_us_games()
     today = datetime.now().strftime('%Y-%m-%d')
     
     data = {
-        'platform': 'Google Play缇庡尯鍏嶈垂姒?,
+        'platform': 'Google Play美区免费榜',
         'update_date': today,
         'update_time': datetime.now().isoformat(),
         'count': len(games),
@@ -94,11 +96,11 @@ def save_google_us_data():
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     
-    # 鍚屾椂淇濆瓨鏈€鏂版暟鎹埌 latest.json
+    # 同时保存最新数据到 latest.json
     with open(os.path.join(output_dir, 'latest.json'), 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     
-    print(f"Google Play缇庡尯鏁版嵁宸蹭繚瀛? {output_file}")
+    print(f"Google Play美区数据已保存: {output_file}")
     return data
 
 
