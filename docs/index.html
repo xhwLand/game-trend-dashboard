@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>娓告垙姒滃崟鍒嗘瀽鐪嬫澘 - 鎶栭煶/寰俊/iOS/Google浼戦棽娓告垙鎺掕姒?/title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>馃幃 娓告垙姒滃崟鍒嗘瀽鐪嬫澘</h1>
+            <p class="subtitle">鎶栭煶 路 寰俊 路 iOS缇庡尯 路 Google Play缇庡尯 | 姣忔棩鑷姩鏇存柊</p>
+            <div class="last-update">
+                <span id="lastUpdate">鍔犺浇涓?..</span>
+                <button id="refreshBtn" class="btn-refresh" onclick="loadAllData()">馃攧 鍒锋柊鏁版嵁</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 骞冲彴鍒囨崲鏍囩 -->
+        <div class="platform-tabs">
+            <button class="tab-btn active" data-platform="all" onclick="switchPlatform('all')">
+                馃搳 鍏ㄩ儴骞冲彴
+            </button>
+            <button class="tab-btn" data-platform="douyin" onclick="switchPlatform('douyin')">
+                馃摫 鎶栭煶灏忔父鎴?            </button>
+            <button class="tab-btn" data-platform="wechat" onclick="switchPlatform('wechat')">
+                馃挰 寰俊灏忔父鎴?            </button>
+            <button class="tab-btn" data-platform="ios_us" onclick="switchPlatform('ios_us')">
+                馃崕 iOS缇庡尯
+            </button>
+            <button class="tab-btn" data-platform="google_us" onclick="switchPlatform('google_us')">
+                馃 Google缇庡尯
+            </button>
+        </div>
+
+        <!-- 缁熻鍗＄墖 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">馃摫</div>
+                <div class="stat-info">
+                    <div class="stat-value" id="totalGames">-</div>
+                    <div class="stat-label">鏀跺綍娓告垙</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">馃敟</div>
+                <div class="stat-info">
+                    <div class="stat-value" id="topGame">-</div>
+                    <div class="stat-label">姒滈娓告垙</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">馃搱</div>
+                <div class="stat-info">
+                    <div class="stat-value" id="trendingUp">-</div>
+                    <div class="stat-label">涓婂崌瓒嬪娍</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">猸?/div>
+                <div class="stat-info">
+                    <div class="stat-value" id="avgRating">-</div>
+                    <div class="stat-label">骞冲潎璇勫垎</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 瓒嬪娍鍥捐〃 -->
+        <div class="charts-section">
+            <h2>馃搱 鐑害瓒嬪娍鍒嗘瀽</h2>
+            <div class="chart-container">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 娓告垙绫诲瀷鍒嗗竷 -->
+        <div class="charts-section">
+            <h2>馃幆 娓告垙绫诲瀷鍒嗗竷</h2>
+            <div class="chart-row">
+                <div class="chart-container half">
+                    <canvas id="typeChart"></canvas>
+                </div>
+                <div class="chart-container half">
+                    <canvas id="platformChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 鎺掕姒滆〃鏍?-->
+        <div class="rankings-section">
+            <div class="section-header">
+                <h2>馃弳 鎺掕姒?TOP 50</h2>
+                <div class="filter-controls">
+                    <select id="platformFilter" onchange="filterTable()">
+                        <option value="all">鍏ㄩ儴骞冲彴</option>
+                        <option value="douyin">鎶栭煶灏忔父鎴?/option>
+                        <option value="wechat">寰俊灏忔父鎴?/option>
+                        <option value="ios_us">iOS缇庡尯</option>
+                        <option value="google_us">Google缇庡尯</option>
+                    </select>
+                    <select id="sortBy" onchange="sortTable()">
+                        <option value="rank">鎸夋帓鍚?/option>
+                        <option value="score">鎸夌儹搴?璇勫垎</option>
+                        <option value="name">鎸夊悕绉?/option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table id="gamesTable">
+                    <thead>
+                        <tr>
+                            <th>鎺掑悕</th>
+                            <th>娓告垙鍚嶇О</th>
+                            <th>骞冲彴</th>
+                            <th>绫诲瀷/绫诲埆</th>
+                            <th>鐑害/璇勫垎</th>
+                            <th>瓒嬪娍</th>
+                            <th>娼滃姏璇勪及</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gamesTableBody">
+                        <tr>
+                            <td colspan="7" class="loading">鍔犺浇涓?..</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 娼滃姏鏂版父鎴忔帹鑽?-->
+        <div class="potential-section">
+            <h2>馃専 娼滃姏鏂版父鎴忓彂鐜?/h2>
+            <p class="section-desc">鏍规嵁鐑害涓婂崌瓒嬪娍鍜岃瘎鍒嗙患鍚堣瘎浼帮紝鎺ㄨ崘鍏虫敞鐨勬柊娓告垙</p>
+            <div class="potential-grid" id="potentialGames">
+                <div class="potential-card">
+                    <div class="potential-rank">#1</div>
+                    <div class="potential-info">
+                        <div class="potential-name">Monopoly GO!</div>
+                        <div class="potential-meta">妗屾父绫?路 iOS/Google</div>
+                        <div class="potential-reason">鏂颁笂绾跨儹搴﹂鍗囷紝缁忓吀IP鏀圭紪</div>
+                    </div>
+                    <div class="potential-score">猸愨瓙猸愨瓙猸?/div>
+                </div>
+                <div class="potential-card">
+                    <div class="potential-rank">#2</div>
+                    <div class="potential-info">
+                        <div class="potential-name">铔嬩粩娲惧</div>
+                        <div class="potential-meta">浼戦棽绫?路 鎶栭煶/寰俊</div>
+                        <div class="potential-reason">鍥藉唴鏂版檵鐖嗘锛屼笂鍗囧娍澶村己鍔?/div>
+                    </div>
+                    <div class="potential-score">猸愨瓙猸愨瓙猸?/div>
+                </div>
+                <div class="potential-card">
+                    <div class="potential-rank">#3</div>
+                    <div class="potential-info">
+                        <div class="potential-name">鍏冩ⅵ涔嬫槦</div>
+                        <div class="potential-meta">浼戦棽绫?路 鎶栭煶/寰俊</div>
+                        <div class="potential-reason">鑵捐鍔涙帹娲惧娓告垙锛岀珵浜夋牸灞€鍙樺寲</div>
+                    </div>
+                    <div class="potential-score">猸愨瓙猸愨瓙</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 鏁版嵁鏉ユ簮璇存槑 -->
+        <div class="sources-section">
+            <h2>馃摎 鏁版嵁鏉ユ簮璇存槑</h2>
+            <div class="sources-grid">
+                <div class="source-card">
+                    <div class="source-icon">馃摫</div>
+                    <div class="source-name">鎶栭煶灏忔父鎴?/div>
+                    <div class="source-desc">鎶栭煶娓告垙涓績鍏紑姒滃崟</div>
+                </div>
+                <div class="source-card">
+                    <div class="source-icon">馃挰</div>
+                    <div class="source-name">寰俊灏忔父鎴?/div>
+                    <div class="source-desc">寰俊灏忔父鎴忎腑蹇冨叕寮€姒滃崟</div>
+                </div>
+                <div class="source-card">
+                    <div class="source-icon">馃崕</div>
+                    <div class="source-name">iOS缇庡尯</div>
+                    <div class="source-desc">App Store鍏嶈垂娓告垙姒?/div>
+                </div>
+                <div class="source-card">
+                    <div class="source-icon">馃</div>
+                    <div class="source-name">Google Play缇庡尯</div>
+                    <div class="source-desc">Google Play鍏嶈垂娓告垙姒?/div>
+                </div>
+            </div>
+            <p class="update-info">
+                鈿欙笍 鏁版嵁姣忔棩鑷姩鏇存柊 路 鐢?GitHub Actions 瀹氭椂鎶撳彇 路 鎵樼浜?GitHub Pages
+            </p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>娓告垙姒滃崟鍒嗘瀽鐪嬫澘 路 姣忔棩鑷姩鏇存柊 路 寮€婧愰」鐩?/p>
+            <p class="github-link">
+                <a href="https://github.com/xhwLand/game-trend-dashboard" target="_blank">
+                    馃搨 鏌ョ湅GitHub椤圭洰
+                </a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
